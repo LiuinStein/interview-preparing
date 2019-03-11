@@ -1,3 +1,6 @@
+\documentclass[main.tex]{subfiles}
+\begin{document}
+
 \chapter{Computer Science}
 \section{计算机网络}
 \subsection{TCP连接管理}
@@ -23,6 +26,7 @@
 
 \section{数据库系统原理}
 \subsection{绪论}
+\subsubsection{基本概念}
 数据是数据库中存储的基本对象，数据与其语义是不可分的，语义即对数据含义的说明。数据库是长期存储在计算机内、有组织的、可共享的大量数据的集合。\\
 DBMS的主要功能如下：\\
 \begin{enumerate}
@@ -41,7 +45,7 @@ DBAS数据库应用系统：就相当于计算机应用系统，是数据库系�
     \includegraphics[scale=0.8]{./images/0019.png}
     \caption{E-R图的表示}
 \end{figure}
-数据模型：
+\subsubsection{数据模型}
 \begin{enumerate}
     \item 格式化模型
         \begin{enumerate}
@@ -57,10 +61,18 @@ DBAS数据库应用系统：就相当于计算机应用系统，是数据库系�
                     \includegraphics[scale=0.5]{./images/0021.png}
                     \caption{网状模型}
                 \end{figure}
-
-
-
         \end{enumerate}
+    \item 关系模型：关系模型下数据的逻辑结构是一张二维表，由行和列组成。其中，关系必须是规范化的，每一个分量必须是一个不可分的数据项，不允许表中有表。例如下图中的工资就是一个可分的数据项，所以其不符合关系模型的要求。关系模型中实体和各类的联系都用关系来表示，其概念单一，可描述一对一、一对多和多对多的联系，具有更高的数据独立性。
+        \begin{figure}
+            \centering
+            \includegraphics[scale=0.5]{./images/0022.png}
+            \caption{表中有表的实例}
+        \end{figure}
 \end{enumerate}
+\subsubsection{数据库的系统结构}
+提到了一种叫做模式（schema）的概念，一般说的模式，指的是逻辑模式，是对数据库中全体数据的逻辑结构和特征的描述。{\bfseries 一个数据库只有一个模式}。
+
 
 \section{编译原理}
+
+\end{document}

@@ -1,11 +1,12 @@
 % LaTeX book template
 % Template author: Shaoqun Liu<liuinstein@gmail.com>
-% Template last-modified: Feb 23, 2019
+% Template last-modified: Mar 11, 2019
 % Template features:
 %    1. Code highlight based on minted, xcolor
 %    2. Chinese character supported based on ctex
 %    3. Paragraph indent based on indentfirst
 %    4. Hyperreference supported by hyperref
+%    5. Modular document with subfiles package
 
 \documentclass[a4paper]{report}
 % Set left margin - The default is 1 inch, so the following
@@ -24,6 +25,7 @@
 % In this case, bottom margin is 11in - 0.75in - 9.5in = 0.75in
 \setlength{\textheight}{8in}
 
+%%%%%%%%% Universal packages %%%%%%%
 \usepackage{amsmath}
 \usepackage{amsxtra}
 \usepackage{amsopn}
@@ -32,23 +34,20 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{chaptengah}
 \usepackage{color}
+\usepackage{curves}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{shadow}
+%%%%%%%%%% Chinese support %%%%%%%%%
 \usepackage[UTF8]{ctex}
 \ctexset{
     today=old,
     contentsname=Contents,
     figurename=Figure
 }
-\usepackage{curves}
-\usepackage{float}
-\usepackage{graphicx}
-\usepackage{shadow}
-% \usepackage[sectionbib,square]{natbib}
-\usepackage{chaptengah}
-\pagenumbering{roman}
-\usepackage{indentfirst}
-\setlength{\parindent}{2em}
-\usepackage[colorlinks, linkcolor=black, urlcolor=blue]{hyperref}
+%%%%%%%%%% Code highlight %%%%%%%%%%
 \usepackage{minted}
 \usepackage{xcolor}
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
@@ -56,10 +55,19 @@
     bgcolor={bg},
     breaklines=true
 }
+%%%%%%%%%% Hyperlink %%%%%%%%%%%%%%%
+\usepackage[colorlinks, linkcolor=black, urlcolor=blue]{hyperref}
+%%%%%%%%%% Modular document %%%%%%%%
+\usepackage{subfiles}
+%%%%%%%%%% Paragraph indent %%%%%%%%
+\usepackage{indentfirst}
+\setlength{\parindent}{2em}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Set the beginning of a LaTeX document
-%\usepackage[colorinlistoftodos]{todonotes}
+
+%%%%%%%%%%%%%%%%%%%%%%% Document beginning %%%%%%%%%%%%%
 \begin{document}
+\pagenumbering{roman}
 
 %%%%%%%%%%%%%%%%%%%%%%% Cover %%%%%%%%%%%%%%%%%%%%%%%%%%
 \title{
@@ -74,24 +82,31 @@
 \maketitle
 
 %%%%%%%%%%%%%%%%%%%%%%% Dedication %%%%%%%%%%%%%%%%%%%%%
-\include{chapter.dedication}
+\subfile{chapter.dedication}
 
 %%%%%%%%%%%%%%%%%%%%%%% TOC %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tableofcontents
 
-%%%%%%%%%%%%%%%%%%%%%%% Chapter %%%%%%%%%%%%%%%%%%%%%%%%
-\include{chapter.the_java_language_itself}
+%%%%%%%%%%%%%%%%%%%%%%% Chapters %%%%%%%%%%%%%%%%%%%%%%%
+% Prevent page numbering from starting page disorder
+% and set a new way of page numbering to main body
+\clearpage
+\pagenumbering{arabic}
 
-\include{chapter.spring}
+\subfile{chapter.the_java_language_itself}
 
-\include{chapter.mysql_and_mybatis}
+\subfile{chapter.spring}
 
-\include{chapter.concurrent_programming}
+\subfile{chapter.mysql_and_mybatis}
 
-\include{chapter.design_pattern}
+\subfile{chapter.concurrent_programming}
 
-\include{chapter.computer_science}
+\subfile{chapter.design_pattern}
 
-\include{chapter.others}
+\subfile{chapter.computer_science}
+
+\subfile{chapter.others}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \end{document}

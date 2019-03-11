@@ -1,6 +1,7 @@
-\chapter{The Java Language Itself}
-\pagenumbering{arabic}
+\documentclass[main.tex]{subfiles}
+\begin{document}
 
+\chapter{The Java Language Itself}
 \section{JVM内存管理及垃圾回收}
 \subsection{运行时数据区组成}
 \begin{enumerate}
@@ -275,3 +276,5 @@ HashMap中的tableSizeFor()方法用来保证HashMap总是使用2的幂作为哈
     \caption{ConcurrentHashMap 分段锁}
 \end{figure}
 JDK 1.8之后取消了分段锁，采用了synchronized来保证并发安全，synchronized只锁定当前链表或红黑树的首节点，这样只要hash不冲突，就不会产生并发问题。
+
+\end{document}
