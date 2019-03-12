@@ -70,8 +70,70 @@ DBAS数据库应用系统：就相当于计算机应用系统，是数据库系�
         \end{figure}
 \end{enumerate}
 \subsubsection{数据库的系统结构}
-提到了一种叫做模式（schema）的概念，一般说的模式，指的是逻辑模式，是对数据库中全体数据的逻辑结构和特征的描述。{\bfseries 一个数据库只有一个模式}。
+提到了一种叫做模式（schema）的概念，一般说的模式，指的是逻辑模式，是对数据库中全体数据的逻辑结构和特征的描述。{\bfseries 一个数据库只有一个模式}。其实就相当于数据库中所有表的结构的一个汇总。\\
+\begin{enumerate}
+    \item 外模式：亦称子模式或用户模式，是对局部数据的逻辑结构和特征的描述，通常是模式的子集。可以将其看做视图。{\bfseries 同一外模式可以被多个应用程序所使用，但一个应用程序只能使用一个外模式}。
+    \item 内模式：也称存储模式，是物理结构和存储方式的表述。{\bfseries 一个数据库只有一个内模式}。
+\end{enumerate}
+一般数据库系统一般采用三级模式结构：
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{./images/0023.png}
+    \caption{数据库系统的三级模式结构}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{./images/0024.png}
+    \caption{外模式、模式与内模式}
+\end{figure}
 
+\subsection{关系数据库}
+$ D_1 \times D_2 \times \cdots \times D_n $（笛卡尔积）的子集叫做在域$ D_1, D_2, \cdots, D_n $上的关系。表示为$ R(D_1, D_2,\cdots D_n) $。其中n为关系的度。说是子集的原因是因为笛卡尔积的结果不一定都是有意义的，比如$ D_1 $代表研究生导师集合，$ D_2  $代表专业集合，$ D_3 $代表学生集合，假设导师与专业是1:1的关系，与研究生是1:n的关系，那么$ D_1, D_2, D_3 $的笛卡尔积就没有实际的意义，所以说此处关系的定义实则为笛卡尔积结果中有实际意义的集合。广义笛卡尔积的计算如下：\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{./images/0025.png}
+    \caption{广义笛卡尔积的计算}
+\end{figure}
+\subsubsection{关系运算}
+选择：$ \sigma_F(R)=\{t | t \in R \cap F(t) = \text{'true'}\} $，其中F为选择的条件。例如在关系R中选出A小于5且C等于7的，即：\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{./images/0026.png}
+    \caption{$ \sigma_{A<5 \cap C=7}(R) $}
+\end{figure}
+投影：$ \Pi_A(R)=\{ t[A] | t \in R \}, A \subseteq R $，其中A为R的属性列。其实就是选R中的几列组成一个视图，需要注意的就是{\bfseries 投影的结果需要去除重复的行}，例如：\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{./images/0027.png}
+    \caption{$ \Pi_{B,C}(R) $}
+\end{figure}
+连接：连接操作由两步组成，第一步求两个关系的广义笛卡尔积，第二步在所求得的笛卡尔积中按条件选取满足一定条件的元组，即：$ \mathop{R \Join S}\limits_{A \theta B}=\sigma_{R.A \theta S.B}(R \times S) $，例如：\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{./images/0028.png}
+    \caption{$ \mathop{R \Join S}\limits_{B<D} $}
+\end{figure}
+其中$ \theta $为等号的连接运算称为{\bfseries 等值连接}，即从关系R与S的广义笛卡尔积中选取A, B属性值相等的元素。{\bfseries 自然连接}是当R和S具有相同的属性组，且连接的运算符为等号，并且在连接结果中去掉重复的属性组。\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{./images/0029.png}
+    \caption{等值连接和自然连接}
+\end{figure}
+外连接就是把连接中所舍弃的元组也保存在结果集中，而在其他属性上填充NULL。左外连接和右外连接即分别只保存左边关系或右边关系中要舍弃的元素，如图：\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{./images/0030.png}
+    \caption{外连接、左外连接和右外连接}
+\end{figure}
+可以使用如此方法来理解上文中所述的外连接，首先，我们先写出其自然连接的结果，就有了外连接结果中的前4行，然后我们再来看R和S，R中有$ a_2,b_4,12 $在S中找不到对应的连接对象，同样S中有$ b_5,2 $在R中找不到对应的连接对象，因此，将这两行分别加上NULL，填入外连接的结果集中。同理，如果只保存R或S中要舍弃的元素就有了左外连接和右外连接的结果。\\
+象集：说白了就是选出其中的一列作为新的关系而单独存在。除运算这个比较难以表述：\\
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.25]{./images/0031.png}
+    \caption{除运算}
+\end{figure}
+在关系R中，A可以取四个值\{a1,a2,a3,a4\}，分别求出这四个值的象集如图，然后求出S在(B,C)上的投影为\{(b1,c2),(b2,c3),(b2,c1)\}，显然只有R的象集$ a_1 $包含S在(B,C)属性组上的投影上，所以 $ R \div S=\{a_1\} $。\\
+关系具有如下三类完整性：实体完整性、参照完整性和用户定义完整性，其中{\bfseries 关系必须满足实体完整性和参照完整性}。实体完整性的例子就比如主键唯一且不能取空值。参照完整性的例子就比如外键。
 
 \section{编译原理}
 

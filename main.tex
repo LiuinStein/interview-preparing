@@ -1,14 +1,18 @@
 % LaTeX book template
 % Template author: Shaoqun Liu<liuinstein@gmail.com>
-% Template last-modified: Mar 11, 2019
+% Template last-modified: Mar 12, 2019
 % Template features:
 %    1. Code highlight based on minted, xcolor
 %    2. Chinese character supported based on ctex
 %    3. Paragraph indent based on indentfirst
 %    4. Hyperreference supported by hyperref
 %    5. Modular document with subfiles package
+% Warning:
+%   Compiling a subfile alone may cause some styles malfunction,
+%   such as the overrided font size with \DeclareMathSizes tag.
+%   Please consider compiling main.tex for best read experience.
 
-\documentclass[a4paper]{report}
+\documentclass[a4paper, 12pt]{report}
 % Set left margin - The default is 1 inch, so the following
 % command sets a 1.25-inch left margin.
 \setlength{\oddsidemargin}{0.25in}
@@ -24,6 +28,10 @@
 % Set height of the text - What is left will be the bottom margin.
 % In this case, bottom margin is 11in - 0.75in - 9.5in = 0.75in
 \setlength{\textheight}{8in}
+
+% Set the font size of inline math formular - \DeclareMathSizes {t-size} {mt-size} {s-size} {ss-size}
+% <t-size> equals to body text size, <mt-size> as the math text size, <s-size> as the script size and <ss-size> the scriptscript size to be used in math
+\DeclareMathSizes{12}{14}{8}{8}
 
 %%%%%%%%% Universal packages %%%%%%%
 \usepackage{amsmath}
