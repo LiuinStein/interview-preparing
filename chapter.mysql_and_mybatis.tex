@@ -2,6 +2,77 @@
 \begin{document}
 
 \chapter{MySQL and MyBatis}
+\section{SQL}
+\subsection{SELECT}
+\begin{enumerate}
+    \item 可以使用IN或NOT IN在查找时确定集合，例如：
+        \begin{minted}{sql}
+            # 查询信息系（IS）、数学系（MA）和计算机科学系（CS）学生的信息
+            SELECT * FROM  Student WHERE Sdept IN ( 'IS'，'MA'，'CS' );
+        \end{minted}
+    \item 在涉及空值的查询中，必须使用IS NULL或IS NOT NULL来判断值是否为空，而不能使用等号代替。
+    \item AND运算的优先级要高于OR。
+    \item 使用ORDER BY对结果排序时，如果被排序的列中包含NULL，则如果使用ASC升序则NULL值最后显示，如果使用DESC降序则NULL值最先显示。总之就是一个意思，NULL值在排序时默认比所有值都要大。
+    \item GROUP BY用于细化聚集函数的作用对象。HAVING短语作用于组，从中选择满足条件的组，例如：
+        \begin{minted}{sql}
+            # 查询选修了3门以上课程的学生学号
+            SELECT Sno FROM StudentCourse GROUP BY Sno HAVING COUNT(*)>3;
+        \end{minted}
+    \item INTERSECT集合查询，这个不常用，用于获得两个查询结果的交集，不常用的原因也是因为其很容易被替代，例如：
+        \begin{minted}{sql}
+            # 查询既选修了课程1又选修了课程2的学生
+            SELECT Sno FROM SC WHERE Cno='1'
+            INTERSECT
+            SELECT Sno FROM SC WHERE Cno='2';
+            # 这其实可以等价于
+            SELECT Sno FROM SC WHERE Cno='1' AND Sno IN (SELECT Sno FROM SC WHERE Cno='2');
+        \end{minted}
+    \item EXCEPT集合查询，这个也不常用，用于在结果集中排除一些数据：
+        \begin{minted}{sql}
+            # 查询计算机科学系的年龄大于19岁的学生
+            SELECT * FROM Student WHERE Sdept='CS'
+            EXCEPT
+            SELECT * FROM Student WHERE Sage <=19;
+            # 这其实可以等价于
+            SELECT * FROM Student WHERE Sdept= 'CS' AND  Sage>19;
+        \end{minted}
+    \item 嵌套查询中子查询不能使用ORDER BY子句，数据库引擎在处理时有如下两种求解方法：
+        \begin{enumerate}
+            \item 不相关子查询：子查询的查询条件不依赖于父查询，这时由里向外逐层解析，每个子查询在上一级查询处理之前求解，然后子查询的结果用于建立父查询的查找条件。不相关子查询的例子可以看上面介绍INTERSECT集合查询的示例SQL。
+            \item 相关子查询：子查询的结果依赖于父查询，这个时候是从外向内的，例如：
+            \begin{minted}{sql}
+                # 查找同类型图书中价格大于此类图书平均价格的书目
+                # 子查询为查询某一类图书的平均价格
+                SELECT * FROM Books AS a WHERE price > (SELECT AVG(price) FROM Books AS b WHERE a.catalog = b.catalog);
+            \end{minted}
+        \end{enumerate}
+    \item 子查询一定要跟在比较符之后，比如上例中的price和子查询语句对调位置，就会产生错误。
+    \item EXISTS谓词用于判断子查询的结果集是否为空，如果为空则返回false，例如：
+        \begin{minted}{sql}
+            # 查询没有选修课程号为1的课程的学生姓名
+            SELECT Sname FROM Student WHERE NOT EXISTS
+               (SELECT * FROM SC WHERE Sno = Student.Sno AND Cno='1');
+            # 其实这个也可以同义替换一下
+            SELECT Sname FROM Student WHERE Sno NOT IN
+                (SELECT Sno FROM SC WHERE Cno='1')
+        \end{minted}
+\end{enumerate}
+
+\subsection{UPDATE, DELETE, INSERT}
+\begin{enumerate}
+    \item 删除表的DELETE语句中可以使用谓词RESTRICT和CASCADE，RESTRICT意味着删除表是有限制的，即欲删除的表不能被其他别的约束所引用，而且不能存在依赖此表的对象才能删除。CASCADE意味着删除表时没有限制，删除基本表的同时，相关的依赖对象，例如索引、视图、触发器等也将一并被删除。
+\end{enumerate}
+
+\subsection{其他}
+\subsubsection{视图}
+视图建立时{\bfseries 不允许使用含有ORDER BY子句和DISTINCT短语的子查询语句}，关系数据库在执行CREATE VIEW语句创建视图时，只是把视图的定义存入数据字典，{\bfseries 并不执行其中的SELECT语句}。其中，我们可以通过使用WITH CHECK OPTION语句来保证进行修改和插入后的数据仍满足视图的定义，对于插入操作来说，如果插入的数据不满足原视图的定义，则拒绝插入操作，在下面的例子中，如果插入时没有提供Sdept属性值，那插入视图时自动定义Sdept为IS，同时在删除和修改操作时，会在WHERE语句中自动加上Sdept='IS'的条件，例如：
+\begin{minted}{sql}
+    # 建立信息系学生的视图，并要求进行修改和插入操作时仍需保证该视图只有信息系的学生
+    CREATE VIEW IS_Student AS
+    SELECT Sno，Sname，Sage FROM  Student WHERE  Sdept= 'IS'
+    WITH CHECK OPTION;
+\end{minted}
+
 \section{事务}
 \subsection{事务的ACID特性}
 事务就是被绑定在一起作为一个逻辑工作单元的 SQL 语句分组，如果其中一个语句操作失败那么整个操作就被失败，以后操作就会回滚到操作前状态。事务具有ACID四大特性：
@@ -28,6 +99,9 @@
     \item SERIALIZABLE(串行)：最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰，也就是说，该级别可以防止脏读、不可重复读以及幻读。但是这将严重影响程序的性能。
 \end{enumerate}
 此处需注意：Mysql默认采用的REPEATABLE\_READ（可重复读）隔离级别，而Oracle默认采用的READ\_COMMITTED（未提交读）隔离级别。
+
+\subsection{数据库内部事务的恢复}
+发生系统故障时，事务未提交，则强行撤销所有未完成事务。事务已提交（缓冲区的信息此时尚未完全写回到磁盘上），则重做所有已提交事务。
 
 \section{索引}
 \subsection{索引的优缺点}
@@ -68,7 +142,7 @@
     \item BTree索引：MySQL的实现中底层数据结构为B+树
         \begin{enumerate}
             \item MyISAM引擎：索引文件与数据文件分离，B+树的叶节点data域存放数据记录的地址，在索引检索的时候，首先按B+树的搜索算法搜索索引，如果指定的key存在，则取出其data域的值，然后以data域的值为地址读取对应的数据记录，此方法被称为“非聚簇索引”。
-            \item InnoDB引擎：其数据文件本身就是索引文件，其表数据文件本身就是按照B+树进行组织的一个索引结构，树节点的data域保存了完整的数据记录，这个索引的key就是数据表的主键，数据文件本身就是主索引，这被称为“聚簇索引”。而其余的索引都作为辅助索引，辅助索引的data域存储相对应记录主键的值而不是地址。所以，根据辅助索引查找时，先找到其主键的值，然后再走一遍主索引，找到整个字段。因此设计表时，不建议使用过长的字段作为主键，也不建议使用非单调的字段作为主键，这会造成主索引的频繁分裂。
+            \item InnoDB引擎：其数据文件本身就是索引文件，其表数据文件本身就是按照B+树进行组织的一个索引结构，树节点的data域保存了完整的数据记录，这个索引的key就是数据表的主键，数据文件本身就是主索引，这被称为“聚簇索引”。{\bfseries 一个基本表只能建立一个聚簇索引}。而其余的索引都作为辅助索引，辅助索引的data域存储相对应记录主键的值而不是地址。所以，根据辅助索引查找时，先找到其主键的值，然后再走一遍主索引，找到整个字段。因此设计表时，不建议使用过长的字段作为主键，也不建议使用非单调的字段作为主键，这会造成主索引的频繁分裂。
         \end{enumerate}
 \end{enumerate}
 
