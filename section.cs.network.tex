@@ -1,0 +1,20 @@
+\documentclass[chapter.computer_science.tex]{subfiles}
+\begin{document}
+
+\section{计算机网络}
+\subsection{TCP连接管理}
+\subsubsection{TCP的三次握手}
+\begin{enumerate}
+    \item 客户机向服务器发送一个连接请求报文段，此报文段不含应用层数据，SYN=1，客户端会选择一个随机的起始序seq=x。
+    \item 服务端收到并同意后，发回确认，分配TCP缓存和变量，SYN=1, ACK=1，确认号为x+1，服务器随机产生起始需要seq=y，同样不包含应用层数据。
+    \item 客户端收到后，向服务器发回确认，分配TCP缓存和变量，ACK=1，序号为x+1，确认号ack字段为y+1，该报文段可携带数据。
+\end{enumerate}
+\subsubsection{TCP的四次挥手}
+\begin{enumerate}
+    \item 客户机发送连接释放报文段，FIN=1, seq=u，TCP是全双工的，当发送FIN报文时，发送的那一端就不能再发送数据了，而接收的那一段此时仍可以发送数据。
+    \item 服务端发送确认，确认号为u+1，此时TCP连接处于半关闭状态，服务端发送数据，客户端仍要接收。
+    \item 若服务器已经没有向客户端发送的数据，那就通知TCP释放连接，此时发送FIN=1的连接释放报文段。
+    \item 客户端收到连接释放报文段之后，必需发送确认，ACK=1, seq=u+1，此时TCP连接没有被释放掉，等待2MSL后客户端关闭连接。
+\end{enumerate}
+
+\end{document}
