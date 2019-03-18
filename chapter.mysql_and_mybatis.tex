@@ -146,6 +146,14 @@
         \end{enumerate}
 \end{enumerate}
 
+\subsection{BTREE和Hash索引的差异}
+\begin{enumerate}
+    \item Hash索引只能用于使用=或<>操作符的等式比较，如果是{\bfseries 范围查询只能使用BTREE索引}。
+    \item 优化器不能使用Hash索引来加速ORDER BY操作。
+    \item 当重复值时，效率并不比BTree高。
+    \item Hash索引只能使用整个关键字来搜索一行。
+\end{enumerate}
+
 \subsection{覆盖索引}
 如果一个索引包含所有需要查询的字段的值，我们就称之为“覆盖索引”。在InnoDB存储引擎中，如果不是主键索引，叶子结点存储的是主键+列值，最终还是要通过主键回表。这样就会比较慢，覆盖索引就不需要进行回表操作。
 
